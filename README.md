@@ -3,12 +3,22 @@
 
 The dashboard allows users to:
 
-View their transaction history
-Search transactions by ID, sender, receiver, or cause
-Navigate pages using pagination
-Switch between light/dark themes
-Access mobile-friendly layout on smaller screens
+- View their transaction history
+- Search transactions by ID, sender, receiver, or cause
+- Navigate pages using pagination
+- Switch between light/dark themes
+- Access mobile-friendly layout on smaller screens
 
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 15, React 19
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui + Radix UI
+- **Icons**: Lucide React
+- **Auth**: API Key + Secret (HMAC-ready)
+- **HTTP**: Native Fetch API
+- **Dev**: TypeScript, ESLint
+  
 ## 🚀 Installation Guide
 
 ### 1. Clone the Repository
