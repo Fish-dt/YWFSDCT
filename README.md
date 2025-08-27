@@ -1,7 +1,6 @@
 # YaYa Wallet Dashboard - Project Overview
 
 
-## 🚀 Installation Guide
 The dashboard allows users to:
 
 View their transaction history
@@ -9,6 +8,8 @@ Search transactions by ID, sender, receiver, or cause
 Navigate pages using pagination
 Switch between light/dark themes
 Access mobile-friendly layout on smaller screens
+
+## 🚀 Installation Guide
 
 ### 1. Clone the Repository
 ```bash
