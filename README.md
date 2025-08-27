@@ -48,3 +48,6 @@ npm run dev
 ```
 
 Open [http://localhost:4000](http://localhost:4000) in your browser.
+
+### 4. Assumption
+After getting responses with total items 23 and 8 items in the second page,I have set page limit from the yaya wallett server to be 15 which is 23-8=15.
