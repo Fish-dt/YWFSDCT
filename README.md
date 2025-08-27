@@ -13,7 +13,7 @@ Access mobile-friendly layout on smaller screens
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/FIsh-dt/yaya-dashboard-work-3
+git clone https://github.com/Fish-dt/yaya-wallet-dashboard
 cd yaya-dashboard
 ```
 
