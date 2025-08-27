@@ -36,7 +36,9 @@ export function TransactionTable() {
 
       setTransactions(response.transactions || []);
       setTotalCount(response.totalCount);
-      setTotalPages(response.totalPages);
+      const pageSize = 15;
+      setTotalPages(Math.max(1, Math.ceil(response.totalCount / pageSize)));
+
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load transactions");
       console.error("Error loading transactions:", err);
@@ -282,7 +284,7 @@ export function TransactionTable() {
       </div>
 
       {!loading && totalCount > 0 && totalPages > 1 && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} totalItems={totalCount} />
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
       )}
     </div>
   );
