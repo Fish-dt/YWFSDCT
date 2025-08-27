@@ -1,22 +1,14 @@
 # YaYa Wallet Dashboard - Project Overview
 
-## 📁 Project Structure
-
-```
-yaya-dashboard/
-├── app/                  # Next.js App Router pages and layout
-├── components/           # Reusable UI components (header, table, buttons)
-├── lib/                  # API service and utility functions
-├── hooks/                # Custom hooks (useIsMobile)
-├── public/               # Static assets (images, logos)
-├── .env                  # Environment variables (not committed)
-├── .gitignore            # Git ignore file
-├── package.json          # Project dependencies
-├── tailwind.config.js    # Tailwind CSS configuration
-└── README.md             # Project documentation
-```
 
 ## 🚀 Installation Guide
+The dashboard allows users to:
+
+View their transaction history
+Search transactions by ID, sender, receiver, or cause
+Navigate pages using pagination
+Switch between light/dark themes
+Access mobile-friendly layout on smaller screens
 
 ### 1. Clone the Repository
 ```bash
