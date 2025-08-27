@@ -8,22 +8,12 @@ The dashboard allows users to:
 - Navigate pages using pagination
 - Switch between light/dark themes
 - Access mobile-friendly layout on smaller screens
-
-## 🚀 Tech Stack
-
-- **Frontend**: Next.js 15, React 19
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui + Radix UI
-- **Icons**: Lucide React
-- **Auth**: API Key + Secret (HMAC-ready)
-- **HTTP**: Native Fetch API
-- **Dev**: TypeScript, ESLint
   
 ## 🚀 Installation Guide
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Fish-dt/yaya-wallet-dashboard
+git clone https://github.com/Fish-dt/YWFSDCT.git
 cd yaya-dashboard
 ```
 
@@ -49,5 +39,15 @@ npm run dev
 
 Open [http://localhost:4000](http://localhost:4000) in your browser.
 
-### 4. Assumption
-After getting responses with total items 23 and 8 items in the second page,I have set page limit from the yaya wallett server to be 15 which is 23-8=15.
+## Assumption
+After getting responses with total items 23 and 8 items in the second page, I used page limit as 15 as the yaya wallet server response by calculating 23-8=15.
+
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 15, React 19
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui + Radix UI
+- **Icons**: Lucide React
+- **Auth**: API Key + Secret (HMAC-ready)
+- **HTTP**: Native Fetch API
+- **Dev**: TypeScript, ESLint
