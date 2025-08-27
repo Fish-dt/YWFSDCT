@@ -11,8 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "YaYa Wallet Dashboard",
-  description: "Transaction management dashboard for YaYa Wallet",
-  generator: "v0.app",
+  description: "Transaction management dashboard for YaYa Wallet"
 }
 
 export default function RootLayout({

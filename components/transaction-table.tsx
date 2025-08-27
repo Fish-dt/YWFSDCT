@@ -13,7 +13,7 @@ import {
   type Transaction,
   type TransactionSearchParams,
 } from "@/lib/transaction-service";
-
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function TransactionTable() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -23,6 +23,8 @@ export function TransactionTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  const isMobile = useIsMobile();
 
   const loadTransactions = async (params: TransactionSearchParams = {}) => {
     try {
@@ -38,7 +40,6 @@ export function TransactionTable() {
       setTotalCount(response.totalCount);
       const pageSize = 15;
       setTotalPages(Math.max(1, Math.ceil(response.totalCount / pageSize)));
-
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load transactions");
       console.error("Error loading transactions:", err);
@@ -46,8 +47,6 @@ export function TransactionTable() {
       setLoading(false);
     }
   };
-
- 
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -59,22 +58,19 @@ export function TransactionTable() {
       }
     }, 450);
     return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const handleSearch = (query: string) => setSearchQuery(query);
   const handlePageChange = (p: number) => {
-  if (p < 1 || p > totalPages) return;
-  setCurrentPage(p);
+    if (p < 1 || p > totalPages) return;
+    setCurrentPage(p);
 
-  if (searchQuery.trim()) {
-    loadTransactions({ page: p, search: searchQuery.trim() }); // p is used here
-  } else {
-    loadTransactions({ page: p }); // p is used here
-  }
-};
-
-
+    if (searchQuery.trim()) {
+      loadTransactions({ page: p, search: searchQuery.trim() });
+    } else {
+      loadTransactions({ page: p });
+    }
+  };
 
   const formatAmount = (amount: number, currency = "ETB") =>
     new Intl.NumberFormat("en-ET", { style: "currency", currency, minimumFractionDigits: 2 }).format(amount);
@@ -148,8 +144,8 @@ export function TransactionTable() {
       )}
 
       <div className="overflow-x-auto">
-        <Table className="min-w-full">
-          <TableHeader className="hidden md:table-header-group">
+        <Table className="w-full">
+          <TableHeader className={isMobile ? "hidden" : undefined}>
             <TableRow className="bg-gray-50 dark:bg-gray-900/50">
               <TableHead>Type</TableHead>
               <TableHead>Transaction ID</TableHead>
@@ -165,7 +161,7 @@ export function TransactionTable() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-12">
+                <TableCell colSpan={7} className="text-center py-12">
                   <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400">
                     <Loader2 className="h-5 w-5 animate-spin" />
                     Loading transactions...
@@ -175,106 +171,125 @@ export function TransactionTable() {
             ) : transactions.length > 0 ? (
               transactions.map((tx) => (
                 <Fragment key={tx.id}>
-                  {/* desktop row */}
-                  <TableRow className={`hidden md:table-row ${rowStyle(tx.type)}`}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        {iconFor(tx.type)}
-                        {badgeFor(tx.type)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-300">{tx.id}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span>{(tx.sender as any)?.name ?? String((tx.sender as any) ?? "Unknown")}</span>
-                        {((tx.sender as any)?.name ?? tx.sender) === "current_user_wallet" && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5 rounded-md">
-                            You
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span>{(tx.receiver as any)?.name ?? String((tx.receiver as any) ?? "Unknown")}</span>
-                        {((tx.receiver as any)?.name ?? tx.receiver) === "current_user_wallet" && (
-                          <Badge variant="outline" className="text-xs px-1.5 py-0.5 rounded-md">
-                            You
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span className={`font-bold text-lg ${tx.type === "incoming" ? "text-green-600" : "text-red-600"}`}>
-                          {tx.type === "incoming" ? "+" : "-"}
-                          {formatAmount(tx.amount, tx.currency)}
-                        </span>
-                        {((tx.sender as any)?.name ?? tx.sender) === ((tx.receiver as any)?.name ?? tx.receiver) && (
-                          <Badge variant="secondary" className="text-xs bg-blue-50 dark:bg-blue-900/30 rounded-md">
-                            Top-up
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-gray-600 dark:text-gray-300 max-w-xs truncate">{tx.cause}</TableCell>
-                    <TableCell className="text-gray-500 dark:text-gray-400 text-sm">{formatDate(tx.createdAt)}</TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-
-                  {/* mobile row */}
-                  <TableRow className="md:hidden" key={`${tx.id}-mobile`}>
-                    <TableCell colSpan={8} className="p-0">
-                      <div className={`p-4 border-l-4 ${tx.type === "incoming" ? "border-l-green-500 bg-green-50/20" : "border-l-red-500 bg-red-50/20"}`}>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">{iconFor(tx.type)}{badgeFor(tx.type)}</div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">TRANSACTION_ID</span>
-                              <div className="font-mono text-gray-900 dark:text-gray-100 break-all">{tx.id}</div>
+                  {!isMobile ? (
+                    // Desktop Row
+                    <TableRow className={rowStyle(tx.type)}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {iconFor(tx.type)}
+                          {badgeFor(tx.type)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-gray-600 dark:text-gray-300">{tx.id}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{(tx.sender as any)?.name ?? String((tx.sender as any) ?? "Unknown")}</span>
+                          {((tx.sender as any)?.name ?? tx.sender) === "current_user_wallet" && (
+                            <Badge variant="outline" className="text-xs px-1.5 py-0.5 rounded-md">
+                              You
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{(tx.receiver as any)?.name ?? String((tx.receiver as any) ?? "Unknown")}</span>
+                          {((tx.receiver as any)?.name ?? tx.receiver) === "current_user_wallet" && (
+                            <Badge variant="outline" className="text-xs px-1.5 py-0.5 rounded-md">
+                              You
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-bold text-lg ${tx.type === "incoming" ? "text-green-600" : "text-red-600"}`}>
+                            {tx.type === "incoming" ? "+" : "-"}
+                            {formatAmount(tx.amount, tx.currency)}
+                          </span>
+                          {((tx.sender as any)?.name ?? tx.sender) === ((tx.receiver as any)?.name ?? tx.receiver) && (
+                            <Badge variant="secondary" className="text-xs bg-blue-50 dark:bg-blue-900/30 rounded-md">
+                              Top-up
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-gray-600 dark:text-gray-300 max-w-xs truncate">{tx.cause}</TableCell>
+                      <TableCell className="text-gray-500 dark:text-gray-400 text-sm">{formatDate(tx.createdAt)}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    // Mobile Row
+                    <TableRow key={`${tx.id}-mobile`} className="md:hidden">
+                      <TableCell colSpan={7} className="p-0">
+                        <div className={`p-4 border-l-4 ${tx.type === "incoming" ? "border-l-green-500" : "border-l-red-500"} bg-white dark:bg-gray-800`}>
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">{iconFor(tx.type)}{badgeFor(tx.type)}</div>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
                             </div>
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">AMOUNT</span>
-                              <div className={`font-bold text-lg ${tx.type === "incoming" ? "text-green-600" : "text-red-600"}`}>
-                                {tx.type === "incoming" ? "+" : "-"}
-                                {formatAmount(tx.amount, tx.currency)}
+                            <div className="space-y-3 text-sm">
+                              {/* TRANSACTION_ID */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">TRANSACTION_ID</span>
+                                <div className="font-mono text-gray-900 dark:text-gray-100 break-all break-words">
+                                  {tx.id}
+                                </div>
                               </div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">SENDER</span>
-                              <div className="font-medium text-gray-900 dark:text-gray-100 break-all">{(tx.sender as any)?.name ?? tx.sender}</div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">RECEIVER</span>
-                              <div className="font-medium text-gray-900 dark:text-gray-100 break-all">{(tx.receiver as any)?.name ?? tx.receiver}</div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">CAUSE</span>
-                              <div className="text-gray-900 dark:text-gray-100">{tx.cause}</div>
-                            </div>
-                            <div>
-                              <span className="font-medium text-gray-500 dark:text-gray-400">DATE</span>
-                              <div className="text-gray-900 dark:text-gray-100">{formatDate(tx.createdAt)}</div>
+
+                              {/* AMOUNT */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">AMOUNT</span>
+                                <div className={`font-bold text-lg ${tx.type === "incoming" ? "text-green-600" : "text-red-600"}`}>
+                                  {tx.type === "incoming" ? "+" : "-"}
+                                  {formatAmount(tx.amount, tx.currency)}
+                                </div>
+                              </div>
+
+                              {/* SENDER */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">SENDER</span>
+                                <div className="font-medium text-gray-900 dark:text-gray-100">
+                                  {(tx.sender as any)?.name ?? tx.sender}
+                                </div>
+                              </div>
+
+                              {/* RECEIVER */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">RECEIVER</span>
+                                <div className="font-medium text-gray-900 dark:text-gray-100">
+                                  {(tx.receiver as any)?.name ?? tx.receiver}
+                                </div>
+                              </div>
+
+                              {/* CAUSE */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">CAUSE</span>
+                                <div className="text-gray-900 dark:text-gray-100">{tx.cause}</div>
+                              </div>
+
+                              {/* DATE */}
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-500 dark:text-gray-400 text-xs sm:text-sm">DATE</span>
+                                <div className="text-gray-900 dark:text-gray-100">{formatDate(tx.createdAt)}</div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </Fragment>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-12 text-gray-500 dark:text-gray-400">
+                <TableCell colSpan={7} className="text-center py-12 text-gray-500 dark:text-gray-400">
                   {searchQuery ? "No transactions found matching your search." : "No transactions available."}
                 </TableCell>
               </TableRow>
